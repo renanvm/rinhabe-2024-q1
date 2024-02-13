@@ -1,0 +1,63 @@
+version: '3.7'
+
+services:
+  api1:
+    image: rinhabe-2024-q1:latest
+    hostname: api1
+    ports:
+      - "8001:8000"
+    depends_on:
+      - postgres
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '200MB'
+
+  api2:
+    image: rinhabe-2024-q1:latest
+    hostname: api2
+    ports:
+      - "8002:8000"
+    depends_on:
+      - postgres
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: '200MB'
+
+  nginx:
+    image: nginx:latest
+    ports:
+      - "9999:9999"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api1
+      - api2
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '50mb'
+
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=rinhadb
+      - POSTGRES_USER=rinha
+      - POSTGRES_PASSWORD=rinha321
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: '100mb'
+
+networks:
+  default:
+    driver: bridge
+    name: rinha
