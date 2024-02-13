@@ -1,25 +1,29 @@
 package br.com.renan.rinhabe2024q1.controller;
 
-import br.com.renan.rinhabe2024q1.dto.Conta;
-import br.com.renan.rinhabe2024q1.dto.Transacao;
-import org.springframework.http.ResponseEntity;
+import br.com.renan.rinhabe2024q1.dto.ExtratoResponse;
+import br.com.renan.rinhabe2024q1.dto.TransacaoRequest;
+import br.com.renan.rinhabe2024q1.dto.TransacaoResponse;
+import br.com.renan.rinhabe2024q1.service.TransacaoService;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/clientes/{id}")
 public class CrebitosController {
 
-    @GetMapping("/transacoes")
-    public Conta transacoes(@RequestBody Transacao transacao) {
+    private TransacaoService transacaoService;
 
-        var conta = new Conta(0,0);
-
-        return conta;
+    public CrebitosController(TransacaoService transacaoService) {
+        this.transacaoService = transacaoService;
     }
 
-    @PostMapping("/extrato")
-    public ResponseEntity<Void> extrato() {
+    @PostMapping("/transacoes")
+    public TransacaoResponse transacoes(@PathVariable int id, @RequestBody @Valid TransacaoRequest transacaoRequest) {
+        return transacaoService.transacao(id, transacaoRequest);
+    }
 
-        return ResponseEntity.ok().build();
+    @GetMapping("/extrato")
+    public ExtratoResponse extrato(@PathVariable int id) {
+        return transacaoService.getTransacoes(id);
     }
 }
