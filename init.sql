@@ -1,3 +1,9 @@
+CREATE TABLE Conta (
+                       id INTEGER PRIMARY KEY,
+                       limite INTEGER,
+                       saldo INTEGER
+);
+
 INSERT INTO Conta (id, limite, saldo)
 VALUES (1, 100000, 0),
        (2, 80000, 0),
