@@ -6,10 +6,11 @@ services:
     hostname: api01
     depends_on:
       - postgres
+    restart: unless-stopped
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: '0.4'
           memory: '200MB'
 
   api02:
@@ -17,10 +18,11 @@ services:
     hostname: api02
     depends_on:
       - postgres
+    restart: unless-stopped
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: '0.4'
           memory: '200MB'
 
   nginx:
@@ -35,7 +37,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
+          cpus: '0.2'
           memory: '50mb'
 
   postgres:
@@ -52,7 +54,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.25'
+          cpus: '0.5'
           memory: '100mb'
 
 networks:
