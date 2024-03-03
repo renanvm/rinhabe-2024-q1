@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class TransacaoService {
+public class CrebitosService {
 
     private ContaRepository contaRepository;
     private TransacaoRepository transacaoRepository;
 
-    public TransacaoService(ContaRepository contaRepository, TransacaoRepository transacaoRepository) {
+    public CrebitosService(ContaRepository contaRepository, TransacaoRepository transacaoRepository) {
         this.contaRepository = contaRepository;
         this.transacaoRepository = transacaoRepository;
     }
@@ -40,12 +40,12 @@ public class TransacaoService {
     }
 
     @Transactional
-    public ExtratoResponse getTransacoes(int contaId) {
+    public ExtratoResponse getExtrato(int contaId) {
         validarContaId(contaId);
 
         Conta conta = contaRepository.findByContaId(contaId);
 
-        List<Transacao> transacoes = transacaoRepository.findLast10ByContaId(contaId);
+        List<Transacao> transacoes = transacaoRepository.findRecentsByContaId(contaId);
 
         return new ExtratoResponse(new SaldoResponse(conta.getSaldo(), LocalDateTime.now(), conta.getLimite()), transacoes);
     }

@@ -1,19 +1,18 @@
 package br.com.renan.rinhabe2024q1.config;
 
-import jakarta.validation.ValidationException;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestControllerAdvice
 public class CrebitosControllerAdvice {
 
     @ExceptionHandler({
-            ValidationException.class,
+            MethodArgumentNotValidException.class,
     })
-    public void handleValidationException() {
-        throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
+    public ResponseEntity handleValidationException() {
+        return ResponseEntity.unprocessableEntity().build();
     }
 
 }

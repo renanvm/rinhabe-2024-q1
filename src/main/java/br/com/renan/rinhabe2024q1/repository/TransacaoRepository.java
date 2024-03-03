@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +13,6 @@ import java.util.List;
 @Repository
 public interface TransacaoRepository extends JpaRepository<Transacao, Integer> {
 
-    @Transactional
     @Modifying
     @Query(value = """
             INSERT 
@@ -36,7 +34,7 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Integer> {
             ORDER BY realizada_em DESC LIMIT 10
             """,
             nativeQuery = true)
-    List<Transacao> findLast10ByContaId(@Param("contaId") int contaId);
+    List<Transacao> findRecentsByContaId(@Param("contaId") int contaId);
 
 
 }
