@@ -1,6 +1,6 @@
 package br.com.renan.rinhabe2024q1.repository;
 
-import br.com.renan.rinhabe2024q1.entity.Conta;
+import br.com.renan.rinhabe2024q1.entity.Cliente;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -11,23 +11,23 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface ContaRepository extends JpaRepository<Conta, Integer> {
+public interface ClienteRepository extends JpaRepository<Cliente, Integer> {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query(value = """
             SELECT c 
-            FROM Conta c
-            WHERE c.id = :contaId
+            FROM Cliente c
+            WHERE c.id = :clienteId
             """)
-    Conta findByContaId(@Param("contaId") int contaId);
+    Cliente findByClienteId(@Param("clienteId") int clienteId);
 
     @Modifying
     @Query(value = """
-            UPDATE conta 
+            UPDATE cliente 
             SET saldo = saldo + :valor
-            WHERE id = :contaId
+            WHERE id = :clienteId
             """,
             nativeQuery = true)
     void updateSaldo(@Param("valor") int valor,
-                     @Param("contaId") int contaId);
+                     @Param("clienteId") int clienteId);
 }

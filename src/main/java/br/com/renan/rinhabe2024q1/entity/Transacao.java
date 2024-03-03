@@ -16,15 +16,15 @@ public class Transacao {
     @JsonIgnore
     private Integer id;
     @JsonIgnore
-    private Integer contaId;
+    private Integer clienteId;
     private int valor;
     private String tipo;
     private String descricao;
     @JsonProperty("realizada_em")
     private LocalDateTime realizadaEm;
 
-    public Transacao(Integer contaId, int valor, String tipo, String descricao, LocalDateTime realizadaEm) {
-        this.contaId = contaId;
+    public Transacao(Integer clienteId, int valor, String tipo, String descricao, LocalDateTime realizadaEm) {
+        this.clienteId = clienteId;
         this.valor = valor;
         this.tipo = tipo;
         this.descricao = descricao;
@@ -38,8 +38,8 @@ public class Transacao {
         return id;
     }
 
-    public Integer getContaId() {
-        return contaId;
+    public Integer getClienteId() {
+        return clienteId;
     }
 
     public int getValor() {

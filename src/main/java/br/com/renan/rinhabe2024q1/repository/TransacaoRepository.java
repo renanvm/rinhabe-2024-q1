@@ -16,11 +16,11 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Integer> {
     @Modifying
     @Query(value = """
             INSERT 
-            INTO transacao (conta_id, valor, tipo, descricao, realizada_em)
-            VALUES (:contaId, :valor, :tipo, :descricao , :realizadaEm)
+            INTO transacao (cliente_id, valor, tipo, descricao, realizada_em)
+            VALUES (:clienteId, :valor, :tipo, :descricao , :realizadaEm)
             """,
             nativeQuery = true)
-    void saveTransacao(@Param("contaId") int contaId,
+    void saveTransacao(@Param("clienteId") int clienteId,
                        @Param("valor") int valor,
                        @Param("tipo") String tipo,
                        @Param("descricao") String descricao,
@@ -30,11 +30,11 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Integer> {
     @Query(value = """
             SELECT * 
             FROM transacao 
-            WHERE conta_id = :contaId
+            WHERE cliente_id = :clienteId
             ORDER BY realizada_em DESC LIMIT 10
             """,
             nativeQuery = true)
-    List<Transacao> findRecentsByContaId(@Param("contaId") int contaId);
+    List<Transacao> findRecentsByClienteId(@Param("clienteId") int clienteId);
 
 
 }

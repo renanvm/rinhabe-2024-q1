@@ -4,20 +4,20 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 
 @Entity
-public class Conta {
+public class Cliente {
 
     @Id
     private Integer id;
     private int limite;
     private int saldo;
 
-    public Conta(Integer id, int limite, int saldo) {
+    public Cliente(Integer id, int limite, int saldo) {
         this.id = id;
         this.limite = limite;
         this.saldo = saldo;
     }
 
-    public Conta() {
+    public Cliente() {
     }
 
     public Integer getId() {

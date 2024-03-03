@@ -4,9 +4,9 @@ import br.com.renan.rinhabe2024q1.dto.ExtratoResponse;
 import br.com.renan.rinhabe2024q1.dto.SaldoResponse;
 import br.com.renan.rinhabe2024q1.dto.TransacaoRequest;
 import br.com.renan.rinhabe2024q1.dto.TransacaoResponse;
-import br.com.renan.rinhabe2024q1.entity.Conta;
+import br.com.renan.rinhabe2024q1.entity.Cliente;
 import br.com.renan.rinhabe2024q1.entity.Transacao;
-import br.com.renan.rinhabe2024q1.repository.ContaRepository;
+import br.com.renan.rinhabe2024q1.repository.ClienteRepository;
 import br.com.renan.rinhabe2024q1.repository.TransacaoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -19,64 +19,63 @@ import java.util.List;
 @Service
 public class CrebitosService {
 
-    private ContaRepository contaRepository;
+    private ClienteRepository clienteRepository;
     private TransacaoRepository transacaoRepository;
 
-    public CrebitosService(ContaRepository contaRepository, TransacaoRepository transacaoRepository) {
-        this.contaRepository = contaRepository;
+    public CrebitosService(ClienteRepository clienteRepository, TransacaoRepository transacaoRepository) {
+        this.clienteRepository = clienteRepository;
         this.transacaoRepository = transacaoRepository;
     }
 
     @Transactional
-    public TransacaoResponse transacao(int contaId, TransacaoRequest transacao) {
-        validarContaId(contaId);
+    public TransacaoResponse transacao(int clienteId, TransacaoRequest transacao) {
+        validarClienteId(clienteId);
 
-        Conta conta = contaRepository.findByContaId(contaId);
+        Cliente cliente = clienteRepository.findByClienteId(clienteId);
 
         if ("d".equals(transacao.tipo())) {
-            return processarTransacaoDebito(conta, transacao);
+            return processarTransacaoDebito(cliente, transacao);
         }
-        return processarTransacaoCredito(conta, transacao);
+        return processarTransacaoCredito(cliente, transacao);
     }
 
     @Transactional
-    public ExtratoResponse getExtrato(int contaId) {
-        validarContaId(contaId);
+    public ExtratoResponse getExtrato(int clienteId) {
+        validarClienteId(clienteId);
 
-        Conta conta = contaRepository.findByContaId(contaId);
+        Cliente cliente = clienteRepository.findByClienteId(clienteId);
 
-        List<Transacao> transacoes = transacaoRepository.findRecentsByContaId(contaId);
+        List<Transacao> transacoes = transacaoRepository.findRecentsByClienteId(clienteId);
 
-        return new ExtratoResponse(new SaldoResponse(conta.getSaldo(), LocalDateTime.now(), conta.getLimite()), transacoes);
+        return new ExtratoResponse(new SaldoResponse(cliente.getSaldo(), LocalDateTime.now(), cliente.getLimite()), transacoes);
     }
 
-    private TransacaoResponse processarTransacaoDebito(Conta conta, TransacaoRequest transacao) {
-        validarLimite(conta.getSaldo(), transacao.valor(), conta.getLimite());
-        contaRepository.updateSaldo(-transacao.valor(), conta.getId());
-        salvarTransacao(conta.getId(), transacao.valor(), transacao.tipo(), transacao.descricao());
-        return new TransacaoResponse(conta.getLimite(), conta.getSaldo() - transacao.valor());
+    private TransacaoResponse processarTransacaoDebito(Cliente cliente, TransacaoRequest transacao) {
+        validarSaldo(cliente.getSaldo(), transacao.valor(), cliente.getLimite());
+        clienteRepository.updateSaldo(-transacao.valor(), cliente.getId());
+        salvarTransacao(cliente.getId(), transacao.valor(), transacao.tipo(), transacao.descricao());
+        return new TransacaoResponse(cliente.getLimite(), cliente.getSaldo() - transacao.valor());
     }
 
-    private TransacaoResponse processarTransacaoCredito(Conta conta, TransacaoRequest transacao) {
-        contaRepository.updateSaldo(transacao.valor(), conta.getId());
-        salvarTransacao(conta.getId(), transacao.valor(), transacao.tipo(), transacao.descricao());
-        return new TransacaoResponse(conta.getLimite(), conta.getSaldo() + transacao.valor());
+    private TransacaoResponse processarTransacaoCredito(Cliente cliente, TransacaoRequest transacao) {
+        clienteRepository.updateSaldo(transacao.valor(), cliente.getId());
+        salvarTransacao(cliente.getId(), transacao.valor(), transacao.tipo(), transacao.descricao());
+        return new TransacaoResponse(cliente.getLimite(), cliente.getSaldo() + transacao.valor());
     }
 
-    private void salvarTransacao(int contaId, int valor, String tipo, String descricao) {
-        transacaoRepository.saveTransacao(contaId, valor, tipo, descricao, LocalDateTime.now());
+    private void salvarTransacao(int clienteId, int valor, String tipo, String descricao) {
+        transacaoRepository.saveTransacao(clienteId, valor, tipo, descricao, LocalDateTime.now());
     }
 
-    private void validarLimite(int saldoAtual, int valorTransacao, int limite) {
-        int novoSaldo = saldoAtual - valorTransacao;
-        boolean isLimiteExcedido = novoSaldo < limite * -1;
-        if (isLimiteExcedido) {
+    private void validarSaldo(int saldoAtual, int valorTransacao, int limite) {
+        boolean isSaldoIncosistente = valorTransacao > (saldoAtual + limite);
+        if (isSaldoIncosistente) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
-    private void validarContaId(int contaId) {
-        if (contaId < 1 || contaId > 5) {
+    private void validarClienteId(int clienteId) {
+        if (clienteId < 1 || clienteId > 5) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
