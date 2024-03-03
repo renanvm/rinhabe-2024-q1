@@ -10,6 +10,7 @@ import br.com.renan.rinhabe2024q1.repository.ContaRepository;
 import br.com.renan.rinhabe2024q1.repository.TransacaoRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -26,10 +27,9 @@ public class TransacaoService {
         this.transacaoRepository = transacaoRepository;
     }
 
+    @Transactional
     public TransacaoResponse transacao(int contaId, TransacaoRequest transacao) {
-        if (contaId < 1 || contaId > 5) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+        validarContaId(contaId);
 
         Conta conta = contaRepository.findByContaId(contaId);
 
@@ -39,10 +39,9 @@ public class TransacaoService {
         return processarTransacaoCredito(conta, transacao);
     }
 
+    @Transactional
     public ExtratoResponse getTransacoes(int contaId) {
-        if (contaId < 1 || contaId > 5) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
+        validarContaId(contaId);
 
         Conta conta = contaRepository.findByContaId(contaId);
 
@@ -52,15 +51,15 @@ public class TransacaoService {
     }
 
     private TransacaoResponse processarTransacaoDebito(Conta conta, TransacaoRequest transacao) {
-        validateSaldo(conta.getSaldo(), transacao.valor(), conta.getLimite());
-        salvarTransacao(conta.getId(), transacao.valor(), transacao.tipo(), transacao.descricao());
+        validarLimite(conta.getSaldo(), transacao.valor(), conta.getLimite());
         contaRepository.updateSaldo(-transacao.valor(), conta.getId());
+        salvarTransacao(conta.getId(), transacao.valor(), transacao.tipo(), transacao.descricao());
         return new TransacaoResponse(conta.getLimite(), conta.getSaldo() - transacao.valor());
     }
 
     private TransacaoResponse processarTransacaoCredito(Conta conta, TransacaoRequest transacao) {
-        salvarTransacao(conta.getId(), transacao.valor(), transacao.tipo(), transacao.descricao());
         contaRepository.updateSaldo(transacao.valor(), conta.getId());
+        salvarTransacao(conta.getId(), transacao.valor(), transacao.tipo(), transacao.descricao());
         return new TransacaoResponse(conta.getLimite(), conta.getSaldo() + transacao.valor());
     }
 
@@ -68,11 +67,18 @@ public class TransacaoService {
         transacaoRepository.saveTransacao(contaId, valor, tipo, descricao, LocalDateTime.now());
     }
 
-    private void validateSaldo(int saldoAtual, int valorTransacao, int limite) {
+    private void validarLimite(int saldoAtual, int valorTransacao, int limite) {
         int novoSaldo = saldoAtual - valorTransacao;
         boolean isLimiteExcedido = novoSaldo < limite * -1;
         if (isLimiteExcedido) {
             throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
+
+    private void validarContaId(int contaId) {
+        if (contaId < 1 || contaId > 5) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
 }

@@ -4,7 +4,6 @@ import br.com.renan.rinhabe2024q1.dto.ExtratoResponse;
 import br.com.renan.rinhabe2024q1.dto.TransacaoRequest;
 import br.com.renan.rinhabe2024q1.dto.TransacaoResponse;
 import br.com.renan.rinhabe2024q1.service.TransacaoService;
-import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -18,7 +17,7 @@ public class CrebitosController {
     }
 
     @PostMapping("/transacoes")
-    public TransacaoResponse transacoes(@PathVariable int id, @RequestBody @Valid TransacaoRequest transacaoRequest) {
+    public TransacaoResponse transacoes(@PathVariable int id, @RequestBody TransacaoRequest transacaoRequest) {
         return transacaoService.transacao(id, transacaoRequest);
     }
 

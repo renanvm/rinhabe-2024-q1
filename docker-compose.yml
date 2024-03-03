@@ -1,29 +1,24 @@
 version: "3.5"
 
 services:
-  api01:
-    image: rinhabe-2024-q1:latest
+  api01: &api
+    image: rinhabe-2024-q1:0.0.1-SNAPSHOT
     hostname: api01
+    ports:
+      - "8081:8080"
     depends_on:
       - postgres
-    restart: unless-stopped
     deploy:
       resources:
         limits:
-          cpus: '0.4'
+          cpus: '0.5'
           memory: '200MB'
 
   api02:
-    image: rinhabe-2024-q1:latest
+    <<: *api
     hostname: api02
-    depends_on:
-      - postgres
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: '0.4'
-          memory: '200MB'
+    ports:
+      - "8082:8080"
 
   nginx:
     image: nginx:latest
@@ -37,12 +32,11 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.2'
-          memory: '50mb'
+          cpus: '0.1'
+          memory: '25mb'
 
   postgres:
-    image: postgres
-    restart: always
+    image: postgres:latest
     ports:
       - "5432:5432"
     environment:
@@ -54,8 +48,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.5'
-          memory: '100mb'
+          cpus: '0.4'
+          memory: '125mb'
 
 networks:
   default:
