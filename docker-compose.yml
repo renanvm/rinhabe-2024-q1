@@ -2,7 +2,7 @@ version: "3.5"
 
 services:
   api01: &api
-    image: rinhabe-2024-q1:0.0.1-SNAPSHOT
+    image: renantins/rinhabe-2024-q1:latest
     hostname: api01
     ports:
       - "8081:8080"

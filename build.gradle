@@ -5,6 +5,16 @@ plugins {
     id 'org.graalvm.buildtools.native' version '0.9.28'
 }
 
+graalvmNative {
+    binaries {
+        main {
+            buildArgs.add("-march=compatibility")
+        }
+
+    }
+
+}
+
 group = 'br.com.renan'
 version = '0.0.1-SNAPSHOT'
 
